@@ -3,27 +3,30 @@ clear
 echo "============================================"
 echo "WordPress Install Script by Javier 🤠"
 echo "============================================"
-echo "Nombre del Proyecto: "
-read -e proyectname
-echo "⚠️ Crear base de dato? (y/n)"
-read -e rundb
-if [ "$rundb" == n ] ; then
-else
-    echo "Base de dato nombre: "
-    read -e dbname
-    cd /Applications/XAMPP/xamppfiles/htdocs/
-    /Applications/xampp/xamppfiles/bin/mysql -u root -e "create database $dbname";
-    echo "========================="
-    echo "Base de dato Creada ✅"
-    echo "========================="
-fi
 echo "⚠️ Iniciar instalación? (y/n)"
 read -e run
 if [ "$run" == n ] ; then
     exit
 else
+
+    echo "Nombre del Proyecto: "
+    read -e proyectname
+
+    echo "⚠️ Crear base de dato? (y/n)"
+    read -e rundb
+
+    if [ "$rundb" == y ] ; then
+        echo "Base de dato nombre: "
+        read -e dbname
+        cd /Applications/XAMPP/xamppfiles/htdocs/
+        /Applications/xampp/xamppfiles/bin/mysql -u root -e "create database $dbname";
+        echo "========================="
+        echo "Base de dato Creada ✅"
+        echo "========================="
+    fi
+
     echo "============================================"
-    echo "Un robot está instalando WordPress ."
+    echo "Un robot está instalando WordPress"
     echo "============================================"
     #crear directorio
     cd /Applications/XAMPP/xamppfiles/htdocs/
@@ -59,11 +62,26 @@ else
     #borrar instalador
     rm wordpress-4.7.3-es_ES.zip
 
-    #elegir intalar plantilla    
-    if [[ condition ]]; then
-        #statements
-    elif [[ condition ]]; then
-        #statements
+    echo "⚠️ Requiere instalar Framework ? (y/n)"
+    read -e runfr
+    #elegir intalar plantilla
+    if [ "$runfr" == y ] ; then
+        echo "🖥 [1] Framework Wordpress"
+        echo "🖥 [2] Framework WooCommerce"
+        echo "========================="
+        echo "Elegir opcion: "
+        read -e runtheme
+        if [ "$runtheme" == 1 ] ; then
+            rm -rf *
+            cd wp-content/themes/
+            git clone git@github.com:javierdevcl/Framework-Wordpress.git
+            mv Framework-Wordpress $proyectname
+        elif [ "$runtheme" == 2 ] ; then
+            rm -rf *
+            cd wp-content/themes/
+            git clone git@github.com:javierdevcl/Framework-Woocomerce.git
+            mv Framework-Woocomerce $proyectname
+        fi
     fi
 
     echo "========================="
