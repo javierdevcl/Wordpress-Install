@@ -59,6 +59,7 @@ else
     #borrar instalador
     rm wordpress-4.7.3-es_ES.zip
 
+    #elegir intalar plantilla    
     if [[ condition ]]; then
         #statements
     elif [[ condition ]]; then
