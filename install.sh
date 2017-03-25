@@ -3,23 +3,23 @@ clear
 echo "============================================"
 echo "WordPress Install Script by Javier 🤠"
 echo "============================================"
-echo "⚠️ Iniciar instalación? (y/n)"
+read -p "Iniciar instalación? (y/n)" -n 1 -r
 read -e run
-if [ "$run" == n ] ; then
+if [[  $REPLY =~ ^[Nn]$ ]]; then
     exit
 else
-
-    echo "Nombre del Proyecto: "
+    echo -e "\033[35m * Nombre del Proyecto: \033[0m "
     read -e proyectname
-
-    echo "⚠️ Crear base de dato? (y/n)"
+    echo -e "\033[35m * Crear base de dato? (y/n)\033[0m"
     read -e rundb
 
     if [ "$rundb" == y ] ; then
-        echo "Base de dato nombre: "
+        echo -ne '\n'
+        echo -e "\033[35m * Base de dato nombre: \033[0m"
         read -e dbname
         cd /Applications/XAMPP/xamppfiles/htdocs/
         /Applications/xampp/xamppfiles/bin/mysql -u root -e "create database $dbname";
+        echo -ne '\n'
         echo "========================="
         echo "Base de dato Creada ✅"
         echo "========================="
@@ -32,53 +32,26 @@ else
     cd /Applications/XAMPP/xamppfiles/htdocs/
     mkdir $proyectname
     cd $proyectname
-    #descarga de archivos
-    curl -O https://es.wordpress.org/wordpress-4.7.3-es_ES.zip
-    tar -zxvf wordpress-4.7.3-es_ES.zip
-    #cambiar directorio por defecto
-    cd wordpress
-    cp -rf . ..
-    cd ..
-    rm -R wordpress
-    #crear wp-config.php
-    cp wp-config-sample.php wp-config.php
-    #remplazando base de dato
-    perl -pi -e "s/database_name_here/root/g" wp-config.php
-    perl -pi -e "s/username_here/$dbuser/g" wp-config.php
+    #wp core
+    wp core config --dbname=$dbname --dbuser=root --locale=es_ES
+    wp core install --url=localhost/$proyectname/ --title=Example --admin_user=admin --admin_password=pass --admin_email=wordpress@javierdev.cl
 
-    perl -i -pe'
-    BEGIN {
-        @chars = ("a" .. "z", "A" .. "Z", 0 .. 9);
-        push @chars, split //, "!@#$%^&*()-_ []{}<>~\`+=,.;:/?|";
-        sub salt { join "", map $chars[ rand @chars ], 1 .. 64 }
-    }
-    s/put your unique phrase here/salt()/ge
-    ' wp-config.php
-
-    #crear carpeta y dar permisos
-    mkdir wp-content/uploads
-    chmod 775 wp-content/uploads
-    echo "Cleaning..."
-    #borrar instalador
-    rm wordpress-4.7.3-es_ES.zip
-
-    echo "⚠️ Requiere instalar Framework ? (y/n)"
-    read -e runfr
+    read -p "Iniciar instalación? (y/n)" -n 1 -r
     #elegir intalar plantilla
-    if [ "$runfr" == y ] ; then
-        echo "🖥 [1] Framework Wordpress"
-        echo "🖥 [2] Framework WooCommerce"
+    if [[  $REPLY =~ ^[Yy]$ ]]; then
+        echo "[1] Framework WordPress"
+        echo "[2] Framework WooCommerce"
         echo "========================="
         echo "Elegir opcion: "
         read -e runtheme
         if [ "$runtheme" == 1 ] ; then
+            cd /Applications/XAMPP/xamppfiles/htdocs/$proyectname/wp-content/themes/
             rm -rf *
-            cd wp-content/themes/
             git clone git@github.com:javierdevcl/Framework-Wordpress.git
             mv Framework-Wordpress $proyectname
         elif [ "$runtheme" == 2 ] ; then
+            cd /Applications/XAMPP/xamppfiles/htdocs/$proyectname/wp-content/themes/
             rm -rf *
-            cd wp-content/themes/
             git clone git@github.com:javierdevcl/Framework-Woocomerce.git
             mv Framework-Woocomerce $proyectname
         fi
@@ -87,3 +60,5 @@ else
     echo "========================="
     echo "Instalación Completa ✅"
     echo "========================="
+fi
+exit
